@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    "gmp",
+    "imgui",
+    "mpfr",
+    "sdl3",
+    "mpc"
+  ]
+}
