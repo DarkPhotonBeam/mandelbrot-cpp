@@ -101,9 +101,9 @@ void Mandelbrot::compute_texture() {
                         //pixelArray[index] = plasma_palette[palette_index];
 
                 }
-                if (y % 10 == 0) std::cout << ".";
+                //if (y % 10 == 0) std::cout << ".";
         }
-        std::cout << "\nDONE!\n";
+        std::cout << "------------------------------------------------\nDONE!\n";
 
         SDL_UnlockTexture(texture);
 }

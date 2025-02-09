@@ -23,7 +23,7 @@ struct Orbit {
 
 #define POINT_RE 0
 #define POINT_IM 0
-#define DELTA 2
+#define DELTA 4
 
 class Mandelbrot {
 private:
@@ -89,7 +89,7 @@ public:
         }
 
         void shrink_offset() {
-                constexpr double fac_d = 0.25;
+                constexpr double fac_d = 0.1;
                 MPC fac{fac_d};
                 //max_iterations = static_cast<int>(max_iterations * std::sqrt(1.0/fac_d));
                 offset *= fac;
@@ -98,7 +98,7 @@ public:
         void set_viewport(Pixel center) {
                 MPC c1 = toComplex(center);
                 MPC c2 = toComplex(center);
-                std::cout << "Center: " << c1 << std::endl;
+                std::cout << "Center: " << c1.to_string(600) << std::endl;
                 c1 -= offset;
                 c2 += offset;
                 vp_bl = c1;
@@ -109,9 +109,10 @@ public:
                 MPC width = diff.real();
                 MPC zoom{3.0};
                 zoom /= width;
-                double zoom_d = zoom.real_double();
+                const double zoom_d = zoom.real_double();
                 std::cout << "Zoom: " << zoom_d << std::endl;
-                max_iterations = static_cast<int>(100.0+50.0*log2(zoom_d));
+                max_iterations = zoom_d < 10 ? 50 : static_cast<int>(100.0+100.0*std::sqrt(std::log10(zoom_d)));
+                std::cout << "Computed Max. iterations: " << max_iterations << std::endl;
 
                 compute();
         }

@@ -12,6 +12,7 @@
 #include <SDL3/SDL_main.h>
 
 #include "Mandelbrot.h"
+#include "MandelbrotDouble.h"
 #include "MPC.h"
 
 
@@ -23,20 +24,23 @@ static SDL_Renderer *renderer = nullptr;
 static SDL_Texture *texture = nullptr;
 
 static Mandelbrot mbrot;
+static MandelbrotDouble mbrotd;
 
-#define WINDOW_WIDTH 256
-#define WINDOW_HEIGHT 256
+constexpr bool useDouble = false;
+
+#define WINDOW_WIDTH 1200
+#define WINDOW_HEIGHT 1200
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
-        SDL_SetAppMetadata("Example Renderer Points", "1.0", "com.example.renderer-points");
+        SDL_SetAppMetadata("Mandelbrot", "1.0", "com.danphoton.mandelbrot");
 
         if (!SDL_Init(SDL_INIT_VIDEO)) {
                 SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
                 return SDL_APP_FAILURE;
         }
 
-        if (!SDL_CreateWindowAndRenderer("examples/renderer/points", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window,
+        if (!SDL_CreateWindowAndRenderer("Mandelbrot", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window,
                                          &renderer)) {
                 SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
                 return SDL_APP_FAILURE;
@@ -49,9 +53,16 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                 return SDL_APP_FAILURE;
         }
 
-        mbrot.initialize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
-        mbrot.set_viewport(Pixel{WINDOW_WIDTH/2, WINDOW_HEIGHT/2});
-        mbrot.print_info();
+        if (useDouble) {
+                mbrotd.initialize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
+                mbrotd.set_viewport(Pixeld{WINDOW_WIDTH/2, WINDOW_HEIGHT/2});
+                mbrotd.print_info();
+        } else {
+                mbrot.initialize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
+                mbrot.set_viewport(Pixel{WINDOW_WIDTH/2, WINDOW_HEIGHT/2});
+                mbrot.print_info();
+        }
+
 
         return SDL_APP_CONTINUE; /* carry on with the program! */
 }
@@ -66,9 +77,16 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
                 std::cout << "Mouse Button Up, x: " << event->button.x << ", y: " << event->button.y << std::endl;
                 int x_i = static_cast<int>(event->button.x);
                 int y_i = static_cast<int>(event->button.y);
-                mbrot.shrink_offset();
-                mbrot.set_viewport(Pixel{x_i, y_i});
-                mbrot.print_info();
+                if (useDouble) {
+                        mbrotd.shrink_offset();
+                        mbrotd.set_viewport(Pixeld{x_i, y_i});
+                        mbrotd.print_info();
+                } else {
+                        mbrot.shrink_offset();
+                        mbrot.set_viewport(Pixel{x_i, y_i});
+                        mbrot.print_info();
+                }
+
         }
         return SDL_APP_CONTINUE; /* carry on with the program! */
 }
@@ -76,10 +94,8 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(renderer);
-        SDL_RenderTexture(renderer, mbrot.get_texture(), nullptr, nullptr);
+        SDL_RenderTexture(renderer, useDouble ? mbrotd.get_texture() : mbrot.get_texture(), nullptr, nullptr);
         SDL_RenderPresent(renderer);
-
-
 
         return SDL_APP_CONTINUE;
 }

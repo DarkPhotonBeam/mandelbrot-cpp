@@ -122,6 +122,13 @@ public:
                 return lhs << s;
         }
 
+        [[nodiscard]] std::string to_string(const unsigned n) const {
+                char *str = mpc_get_str(10, n, _mpc, DEFAULT_ROUND_MODE);
+                const std::string s{str};
+                mpc_free_str(str);
+                return s;
+        }
+
         [[nodiscard]] double get_arg() const {
                 mpfr_t arg;
                 mpfr_init2(arg, DEFAULT_RE_PRECISION);

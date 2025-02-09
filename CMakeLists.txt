@@ -19,8 +19,9 @@ find_package(SDL3 CONFIG REQUIRED)
 add_executable(Mandelbrot src/main.cpp
         src/MPC.cpp
         src/MPC.h
-        src/stb_image_write.h
         src/Mandelbrot.cpp
         src/Mandelbrot.h
+        src/MandelbrotDouble.cpp
+        src/MandelbrotDouble.h
 )
 target_link_libraries(Mandelbrot PRIVATE PkgConfig::gmpxx PkgConfig::mpfr /usr/local/lib/libmpc.a SDL3::SDL3 OpenMP::OpenMP_CXX)
